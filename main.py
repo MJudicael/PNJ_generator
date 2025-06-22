@@ -12,7 +12,7 @@ class GenerateurPNJ(QMainWindow):
         
         # Configuration de la fenêtre
         self.setWindowTitle("Generateur de PNJ")
-        self.setFixedSize(800, 600)
+        self.setFixedSize(470, 600)
 
         # Widget central et layout principal
         central_widget = QWidget()
@@ -21,6 +21,9 @@ class GenerateurPNJ(QMainWindow):
 
         # Bouton de création
         self.btn_creation = QPushButton("Création")
+        self.btn_creation.setFont(QFont("Arial", 10, QFont.Bold))
+        self.btn_creation.setStyleSheet("background-color: lightblue; color: black;")
+        self.btn_creation.setFixedWidth(80) # Largeur fixe pour aligner         
         self.btn_creation.clicked.connect(self.lancement)
         self.main_layout.addWidget(self.btn_creation)
 
@@ -34,49 +37,87 @@ class GenerateurPNJ(QMainWindow):
             'info_base': ['Sexe:', 'Age:', 'Race:'],
             'caracteristiques': ['d20 Particularité du PNJ', 'd06 Caractéristique Haute',
                                'd06 Caractéristique Basse', 'd20 Talents du PNJ',
-                               'd20 Manies du PNJ', 'd12 Traits d\'intéraction',
-                               'd06 Idéal du Bien', 'd06 Idéal du Mal',
-                               'd06 Idéal de la loi', 'd06 Idéal du chaos']
+                               'd20 Manies du PNJ', 'd06 Idéal du Bien', 
+                               'd06 Idéal du Mal', 'd06 Idéal de la loi', 
+                               'd06 Idéal du chaos']
         }
 
-        # Création d'un layout grille pour les informations de base
-        info_layout = QHBoxLayout()
-        for i, label_text in enumerate(labels_info['info_base']):
-            container = QWidget()
-            layout = QHBoxLayout(container)
-            
+        # Style commun pour les labels de base
+        base_label_style = """
+            QLabel {
+                background-color: #f0f0f0;
+                border: 1px solid #c0c0c0;
+                border-radius: 5px;
+                padding: 5px;
+                text-align: center;
+                color: black;
+            }
+        """
+
+        # Style commun pour les labels des caractéristiques
+        carac_label_style = """
+            QLabel {
+                background-color: #f0f0f0;
+                border: 1px solid #c0c0c0;
+                border-radius: 5px;
+                padding: 5px;
+                text-align: center;
+                color: black;
+            }
+        """
+
+        # Création d'un container pour aligner verticalement les informations de base
+        base_container = QWidget()
+        base_layout = QHBoxLayout(base_container)
+        base_layout.setContentsMargins(20, 5, 20, 5)
+
+        # Layout vertical pour les labels et les valeurs
+        labels_layout = QVBoxLayout()
+        values_layout = QVBoxLayout()
+
+        for label_text in labels_info['info_base']:
             label = QLabel(label_text)
-            label.setFixedWidth(50)  # Largeur fixe pour aligner
+            label.setFixedWidth(50)
+            label.setAlignment(Qt.AlignCenter)  # Centrage du texte du label
+            label.setStyleSheet(base_label_style)
+            
             value_label = QLabel()
-            value_label.setFixedWidth(100)  # Largeur fixe pour aligner
+            value_label.setFixedWidth(100)
+            value_label.setAlignment(Qt.AlignCenter)  # Centrage du texte de la valeur
+            value_label.setStyleSheet(base_label_style)
             
             self.labels[label_text] = value_label
             
-            layout.addWidget(label)
-            layout.addWidget(value_label)
-            layout.setContentsMargins(10, 0, 10, 0)  # Marges pour l'espacement
-            
-            info_layout.addWidget(container)
-        
-        self.main_layout.addLayout(info_layout)
-        self.main_layout.addSpacing(20)  # Espace entre les sections
+            labels_layout.addWidget(label)
+            values_layout.addWidget(value_label)
 
-        # Création des autres labels avec alignement
+        base_layout.addLayout(labels_layout)
+        base_layout.addLayout(values_layout)
+        base_layout.addStretch()
+        
+        self.main_layout.addWidget(base_container)
+        self.main_layout.addSpacing(20)
+
+        # Création des autres labels avec alignement et encadrement
         for text in labels_info['caracteristiques']:
             container = QWidget()
             layout = QHBoxLayout(container)
             
             label = QLabel(text)
-            label.setFixedWidth(200)  # Largeur fixe pour aligner
+            label.setFixedWidth(200)
+            label.setStyleSheet(carac_label_style)
+            label.setAlignment(Qt.AlignCenter)
+            
             value_label = QLabel()
-            value_label.setFixedWidth(200)  # Largeur fixe pour aligner
+            value_label.setFixedWidth(250)
+            value_label.setAlignment(Qt.AlignCenter)
             
             self.labels[text] = value_label
             
             layout.addWidget(label)
             layout.addWidget(value_label)
-            layout.addStretch()  # Pousse le contenu vers la gauche
-            layout.setContentsMargins(20, 0, 20, 0)  # Marges pour l'espacement
+            layout.addStretch()
+            layout.setContentsMargins(20, 5, 20, 5)
             
             self.main_layout.addWidget(container)
 
@@ -87,12 +128,11 @@ class GenerateurPNJ(QMainWindow):
             'Sexe:': ["Homme", "Femme"],
             'Race:': ["Orc", "Humain", "Nain", "Elfe", "Gnome"],
             'Age:': ["Enfant", "Adolescent", "Adulte", "Ancien", "Veillard"],
-            'd20 Particularité du PNJ': ["Bijoux distinctifs", "Percings", "Vêtements extravagants"],
+            'd20 Particularité du PNJ': ["Avec des bijoux distinctifs", "Avec des percings", "Avec des vêtements extravagants"],
             'd06 Caractéristique Haute': ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"],
             'd06 Caractéristique Basse': ["Force", "Dextérité", "Constitution", "Intelligence", "Sagesse", "Charisme"],
             'd20 Talents du PNJ': ["Joue d'un instrument", "Parle plusieurs langues", "Incroyablement chanceux"],
             'd20 Manies du PNJ': ["Chante souvent", "Parle en vers", "Voix particulière"],
-            'd12 Traits d\'intéraction': list(range(1, 13)),
             'd06 Idéal du Bien': ["Beauté", "Charité", "Intérêt général"],
             'd06 Idéal du Mal': ["Domination", "Avarice", "Puissance"],
             'd06 Idéal de la loi': ["Communauté", "Equité", "Honneur"],
